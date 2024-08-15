@@ -5,6 +5,7 @@ import { validate } from "../middlewares/validate.js";
 import {
   addImage,
   randomUserCreate,
+  sendEmailRandomUser,
   upload,
 } from "../controllers/randomUsers.js";
 
@@ -22,5 +23,7 @@ randomUsers.post(
 );
 
 randomUsers.post("/image/:token", upload.single("file"), addImage); // Token is passed as a route parameter
+
+randomUsers.post("/email/:token", sendEmailRandomUser);
 
 export { randomUsers };

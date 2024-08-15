@@ -8,6 +8,7 @@ import {
   randomUsersCreate,
 } from "../services/randomUsers.js";
 import { signToken, verifyToken } from "../config/jwt.js";
+import { sendEmail } from "../helpers/mailtrap.js";
 
 const uploadsDir = "uploads/";
 if (!fs.existsSync(uploadsDir)) {
@@ -82,17 +83,52 @@ const addImage = async (req, res, next) => {
       return sendResponse(res, "Failed to update user image", false, 500);
     }
 
-    return sendResponse(
-      res,
-      "User image added successfully",
-      true,
-      200,
-      { filename, filePath, mimetype }
-    );
+    return sendResponse(res, "User image added successfully", true, 200, {
+      filename,
+      filePath,
+      mimetype,
+    });
   } catch (error) {
     console.error(`Error in addImage: ${error.message}`);
     next(error);
   }
 };
 
-export { addImage, randomUserCreate, upload };
+const sendEmailRandomUser = async (req, res, next) => {
+  try {
+    const token = req.params.token;
+    const email = req.body.email;
+    if (!token) {
+      return sendResponse(res, "No token provided", false, 400);
+    }
+    const user = await verifyToken(token);
+    if (!user) {
+      return sendResponse(res, "User not valid", false, 404);
+    }
+    const updatedUser = await findRandomUserAndUpdate(user.id, {
+      email,
+    });
+    if (!updatedUser) {
+      return sendResponse(res, "User email is not add", false, 500);
+    }
+    const emailPayload = {
+      obj: "Account Verification",
+      data: updatedUser.image,
+      category: "Image",
+    };
+    
+    await sendEmail(
+      updatedUser.email,
+      emailPayload.obj,
+      emailPayload.data,
+      emailPayload.category
+    );
+
+    return sendResponse(res, "send email successfully", true, 200);
+  } catch (error) {
+    console.error(`Error in addImage: ${error.message}`);
+    next(error);
+  }
+};
+
+export { addImage, randomUserCreate, upload, sendEmailRandomUser };
