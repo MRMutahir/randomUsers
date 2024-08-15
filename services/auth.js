@@ -52,4 +52,4 @@ const generateJWTToken = async (user) => {
   return authToken;
 };
 
-export { registerUser, authenticateByEmail };
+export { registerUser, authenticateByEmail, generateJWTToken };
