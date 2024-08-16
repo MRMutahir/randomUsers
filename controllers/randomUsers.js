@@ -42,15 +42,10 @@ const randomUserCreate = async (req, res, next) => {
       userName: newUser.userName,
     };
     const authToken = await signToken(JwtPayload);
-    newUser.token = authToken;
-    await newUser.save();
-    return sendResponse(
-      res,
-      "Random user created successfully",
-      true,
-      200,
-      newUser
-    );
+    return sendResponse(res, "Random user created successfully", true, 200, {
+      newUser,
+      authToken,
+    });
   } catch (error) {
     next(error); // Handle errors appropriately
   }
@@ -116,7 +111,7 @@ const sendEmailRandomUser = async (req, res, next) => {
       data: updatedUser.image,
       category: "Image",
     };
-    
+
     await sendEmail(
       updatedUser.email,
       emailPayload.obj,
