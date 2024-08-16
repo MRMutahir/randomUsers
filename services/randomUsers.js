@@ -11,11 +11,8 @@ const randomUsersCreate = async (payload) => {
   }
 };
 
-
 const findRandomUserAndUpdate = async (userID, payload) => {
   try {
-  
-
     const user = await randomUsers.findByIdAndUpdate(
       new mongoose.Types.ObjectId(userID), // Pass the userID directly
       payload,
@@ -24,10 +21,21 @@ const findRandomUserAndUpdate = async (userID, payload) => {
 
     return user;
   } catch (error) {
-    console.log('error', error)
+    console.log("error", error);
     console.error(`Error updating user: ${error.message}`);
     throw new Error(`Error updating user: ${error.message}`);
   }
 };
 
-export { randomUsersCreate, findRandomUserAndUpdate };
+const findByEmail = async (payload) => {
+  try {
+    const user = await randomUsers.findOne(payload);
+    return user;
+  } catch (error) {
+    console.log("Error:", error);
+    console.error(`Error finding user by email: ${error.message}`);
+    throw new Error(`Error finding user by email: ${error.message}`);
+  }
+};
+
+export { randomUsersCreate, findRandomUserAndUpdate, findByEmail };

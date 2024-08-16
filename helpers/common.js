@@ -1,9 +1,8 @@
 import pkg from "log4js";
 import pino from "pino";
 import PinoColada from "pino-colada";
-import bcrypt from "bcrypt";
-import crypto from "crypto";
-import { saveToken } from "../services/tokenService.js";
+
+
 
 
 const { getLogger, configure } = pkg;
@@ -63,57 +62,10 @@ const sendResponse = async (
   return res.status(code).json({ message, success, data });
 };
 
-const hashPassword = async (password) => {
-  const salt = await bcrypt.genSaltSync(10);
-  return bcrypt.hashSync(password, salt);
-};
 
-const comparePassword = async (password, hashPassword) => {
-  const isMatch = await bcrypt.compareSync(password, hashPassword);
-  if (isMatch) {
-    // console.log("isMatLogin successfulch", isMatch);
-    return isMatch;
-  } else {
-    console.log("Invalid credentials", isMatch);
-  }
-};
-
-const generateToken = async (userId, tokenType) => {
-  const buffer = crypto.randomBytes(3);
-  const code = parseInt(buffer.toString("hex"), 16).toString().slice(0, 6);
-
-  const token = await saveToken({
-    userID: userId,
-    token: code,
-    tokenType: tokenType,
-  });
-
-  return token.token;
-};
-
-const accountVerificationCodeByEmail = async (userId) => {
-  return generateToken(userId, "email-token");
-};
-
-const generateResetPasswordToken = async (userId) => {
-  return generateToken(userId, "reset-password-token");
-};
-
-const generateDisplayName = async (firstName, lastName) => {
-  const uniqueId = crypto.randomBytes(3).toString("hex"); // 3 bytes = 6 hex characters
-
-  const displayName = `${firstName}.${lastName}.${uniqueId}`;
-  return displayName;
-};
 export {
   prettyLog,
   prettyErrorLog,
   log2File,
   sendResponse,
-  hashPassword,
-  comparePassword,
-  accountVerificationCodeByEmail,
-  generateResetPasswordToken,
-  generateToken,
-  generateDisplayName,
 };

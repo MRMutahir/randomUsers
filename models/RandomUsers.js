@@ -4,6 +4,7 @@ const RandomUsersSchema = new mongoose.Schema(
   {
     email: {
       type: String,
+      unique: true,
       required: false,
       trim: true,
       lowercase: true,
@@ -17,10 +18,6 @@ const RandomUsersSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    // token: {
-    //   type: String,
-    //   required: false,
-    // },
   },
   {
     timestamps: true,
